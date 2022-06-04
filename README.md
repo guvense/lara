@@ -45,7 +45,7 @@ regex:
   email: "^[a-z]{5,10}@[a-z]{5,10}\\.(com|net|org)$"
   number: "/\d+"
 ``` 
-Then you can use this expression with regex keyword.
+Then you can use this expression with regex keyword. 10 is the lenght of string.
 `${str::regex::email::10} `
 
 ### Number Library
