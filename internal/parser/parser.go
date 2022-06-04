@@ -3,12 +3,15 @@ package parser
 import (
 	"encoding/json"
 	"regexp"
+
+	lara "github.com/guvense/lara/internal"
 )
 
 type Parser struct {
 
 	Request RequestParser `json:"request"`
 	Response ResponseParser `json:"response"`
+	Config  lara.Config 
 }
 
 type RequestParser struct {

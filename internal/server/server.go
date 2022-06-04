@@ -74,7 +74,7 @@ func (s *Server) addMock(mocs []model.Moc) {
 
 	for _, moc := range mocs {
 
-		r := s.Router.HandleFunc(moc.Rest.Request.Endpoint, MocHandler(moc, callback)).
+		r := s.Router.HandleFunc(moc.Rest.Request.Endpoint, MocHandler(moc, callback, s)).
 			Methods(moc.Rest.Request.Method)
 
 		if moc.Rest.Request.Headers != nil {
@@ -91,7 +91,7 @@ func (s *Server) addMock(mocs []model.Moc) {
 	}
 }
 
-func MocHandler(moc model.Moc, callback callback.CallBack) http.HandlerFunc {
+func MocHandler(moc model.Moc, callback callback.CallBack, s *Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		requestBody, _ := io.ReadAll(r.Body)
@@ -115,6 +115,7 @@ func MocHandler(moc model.Moc, callback callback.CallBack) http.HandlerFunc {
 
 		pars := parser.Parser {
 			Request: pReq,
+			Config: s.Config,
 		}
 		
 		stringJson := fmt.Sprintf("%v", string(moc.Rest.Response.Body))

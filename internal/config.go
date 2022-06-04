@@ -9,10 +9,11 @@ import (
 )
 
 type Config struct {
-	MocksPath      string         `yaml:"mocks_path"`
-	ServerConfig   ServerConfig   `yaml:"server"`
-	TokenGenerator TokenGenerator `yaml:"token-generator"`
-	Watcher bool                  `yaml:"watcher"`
+	MocksPath      string               `yaml:"mocks_path"`
+	ServerConfig   ServerConfig         `yaml:"server"`
+	TokenGenerator TokenGenerator 		`yaml:"token-generator"`
+	Watcher bool                  		`yaml:"watcher"`
+	RegexExpression map[string]string           `yaml:"regex"`
 }
 
 type ServerConfig struct {

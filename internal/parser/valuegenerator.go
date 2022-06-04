@@ -16,6 +16,17 @@ type Cached struct {
 	Rest model.Rest `json:"rest"`
 }
 
+var strFunctionMap = map[string]interface{}{
+	"random": random,
+	"uuid":   uuidGenerator,
+	"regex": generateStringFromRegexAndLenght,
+}
+
+var numberFunctionMap = map[string]interface{}{
+	"generate": numberGenerator,
+	
+}
+
 func PrepareString(fullText string, extracteds []string, cached *Parser) string {
 
 	prepared := fullText
@@ -41,7 +52,14 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 				prepared = strings.Replace(prepared, to, generatedValue, -1)
 			}
 
-		} else {
+		} else if s[0] == "str" {
+			if s[1] == "regex" &&  cached.Config.RegexExpression != nil {
+				expression := cached.Config.RegexExpression[s[2]]
+				if expression == "" {
+					continue
+				}
+				s[2] = expression
+			}
 			generatedValue := callDynamically(s[0], s[1], s[2:]...)
 			if generatedValue != "" {
 				prepared = strings.Replace(prepared, value, generatedValue, -1)
@@ -52,31 +70,16 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 	return prepared
 }
 
-func prepareSearchString(searchTemrs []string) string {
 
-	search := searchTemrs[0]
-	for i := 1; i < len(searchTemrs); i++ {
-		search = search + "." + searchTemrs[i]
-	}
-	return search
-}
-
-
-var strFunctionMap = map[string]interface{}{
-	"random": random,
-	"uuid":   uuidGenerator,
-}
-
-var numberFunctionMap = map[string]interface{}{
-	"generate": numberGenerator,
-	
-}
 
 func callDynamically(pack string, name string, args ...string) string {
 	switch pack {
 	case "str":
 		if len(args) == 1 {
 			return (strFunctionMap[name].(func(string) string)(args[0]))
+		}else if len(args) == 2 {
+
+			return (strFunctionMap[name].(func(string, string) string)(args[0], args[1]))
 		}
 		return (strFunctionMap[name].(func() string)())
 	case "number": 
@@ -107,12 +110,32 @@ func random(value string) string {
 }
 
 func uuidGenerator() string {
-
 	return generator.GenerateUuid()
+}
+
+func generateStringFromRegexAndLenght(regex string, lenght string) string {
+
+	parsed, err := strconv.Atoi(lenght)
+
+	if err != nil {
+		return ""
+	}
+
+	return generator.GenerateStringFromRegex(regex, parsed)
 }
 
 func numberGenerator(from int64, to int64) string {
 
 	value :=  generator.GenerateNumber(from, to)
 	return  strconv.FormatInt(int64(value), 10)
+}
+
+
+func prepareSearchString(searchTemrs []string) string {
+
+	search := searchTemrs[0]
+	for i := 1; i < len(searchTemrs); i++ {
+		search = search + "." + searchTemrs[i]
+	}
+	return search
 }
