@@ -46,6 +46,7 @@ func RetrieveAuthBearerToken(tokenServerDetail lara.TokenServerDetail) (string, 
 
 	if err != nil {
 		fmt.Print("Error occurred while sending request server: %w", err)
+		return "", err
 	}
 
 	defer resp.Body.Close()

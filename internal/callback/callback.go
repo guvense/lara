@@ -21,19 +21,21 @@ type CallBack struct {
 
 func (s *CallBack) Call(callbacks []model.Callback, parser *parser.Parser) {
 	for _, callback := range callbacks {
+		
+
 		if callback.CallbackRest.Request.Endpoint != "" {
 
 			var token string
 		
 			if callback.CallbackRest.AuthorizationKey != "" {
 				tokenServers := s.TokenServers
-				token, err := auth.RetrieveAuthBearerToken(tokenServers[callback.CallbackRest.AuthorizationKey])
-				log.Printf("access token: %s", token);
+				var err error
+				token, err = auth.RetrieveAuthBearerToken(tokenServers[callback.CallbackRest.AuthorizationKey])
+			
 				if err != nil {
-					fmt.Print("Error occurred preparing token: %w", err)
+					log.Print("Error occurred preparing token please check token server credentials: %w", err)
 				}
 			}
-
 			sendRestCallback(callback.CallbackRest, token, parser)
 		}
 	}
@@ -75,7 +77,7 @@ func sendRestCallback(restCallback model.CallbackRest, token string, parser *par
 	}
 
 	if token != "" {
-		req.Header.Add("Authorization", "Bearer "+token)
+		req.Header.Add("Authorization", "Bearer "+ token)
 	}
 
 	_, err = client.Do(req)
