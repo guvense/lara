@@ -38,6 +38,15 @@ Thanks to dynamic value, you can generate values for each request. Therefore you
 `${str::random::10} `
 - Uuid String     
 `${str::uuid} `
+- Random String From Regex   
+You can also generate random string from regex. First you need you define your regular expression to config.yml file as below
+``` 
+regex:
+  email: "^[a-z]{5,10}@[a-z]{5,10}\\.(com|net|org)$"
+  number: "/\d+"
+``` 
+Then you can use this expression with regex keyword. 10 is the lenght of string.
+`${str::regex::email::10} `
 
 ### Number Library
 - Random Number      
