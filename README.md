@@ -54,6 +54,23 @@ Generating a random number between -10 and 1
 `${number::generate::-10::1}`
 
 
+### Date Library
+- Current Date from format   
+You can generate current date from format    
+First you need to define your date format to config file as below
+``` 
+date:
+  simpleDateFormat: "2006-01-02"
+  myDateFormat : "2006-02-01"
+``` 
+Then you can generate current date
+`${date::now::simpleDateFormat}`
+The last parameter is the keyword that you added to config file. You can define multiple date formay to config file and user all of them. Check examples for more info.
+
+!!! You need to use go time format time layout. You can check for more info
+[Date format]([quora.com/profile/Ashish-Kulkarni-100](https://gosamples.dev/date-format-yyyy-mm-dd/#:~:text=%F0%9F%93%85%20YYYY-MM-DD%20date%20format%20in%20Go&text=To%2))
+
+
 ### Value keeper 
 You can extract values from request and response with using value keeper.     
 For instance this script will retrieve user from request query parameter. For more you can check examples.     
