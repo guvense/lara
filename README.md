@@ -82,6 +82,7 @@ If you define callback method and this callback will send request to a server. A
 First you need to define your authorization service credential as below.      
 As an example keycloak will our token server name. You can give any name that you want instead of keycloak.    
 type : Password-Credential, Client-Credential      
+
 config.yml
 ``` 
 token-generator:
@@ -111,7 +112,7 @@ moc.json
                 }
             },
 ```
-Lara only support Password Credentials for now.
+
 
 ## Watcher 
 If you want to update server when you update mock file, you can basically pass watcher flag to application.    
