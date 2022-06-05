@@ -36,7 +36,7 @@ Thanks to dynamic value feature, you can generate unique values for each request
 
 ### String Library
 - Random String    
-It will generate ten lenght random string   
+It will generate ten lenght random string.You can adjust lenght of string by changing last paramater.    
 `${str::random::10} `
 - Uuid String    
 It will generate uuid   
