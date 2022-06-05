@@ -49,7 +49,7 @@ regex:
   email: "^[a-z]{5,10}@[a-z]{5,10}\\.(com|net|org)$"
   number: "/\d+"
 ``` 
-Then you can use this expression with regex keyword. 10 is the lenght of string. If you provide lenght of string in your regular expression you don't need to pass string lenght as paramater. Check example for more usages.
+Then you can use this expression with regex keyword. 10 is the lenght of string. If you provide lenght of string in your regular expression you don't need to pass string lenght as paramater. Check example for more usages.    
 `${str::regex::email::10} `
 
 ### Number Library
@@ -62,7 +62,7 @@ Generating a random number between -10 and 1
 - Current Date from format   
 You can generate current date from format    
 First you need to define your date format to config file as below.
-If you are not provided any format the default format will be;
+If you are not provided any format the default format will be;    
 `01-02-2006 -> MM-DD-YYYY`
 
 ``` 
@@ -70,31 +70,30 @@ date:
   simpleDateFormat: "2006-01-02"
   myDateFormat : "2006-02-01"
 ``` 
-Then you can generate current date
-`${date::now::simpleDateFormat}`
-The last parameter is the keyword that you added to config file. You can define multiple date formay to config file and user all of them. You are not allowed to define format to mock spesification. Check examples for more info.
+Then you can generate current date with the script     
+`${date::now::simpleDateFormat}`    
+The last parameter is the keyword that you added to config file. You can define multiple different date format to config file with different keywords. You are not allowed to define format into the mock spesification. Check examples for more info.
 
 !!! You need to use go time format time layout. You can check for more info
 [Date format]([quora.com/profile/Ashish-Kulkarni-100](https://gosamples.dev/date-format-yyyy-mm-dd/#:~:text=%F0%9F%93%85%20YYYY-MM-DD%20date%20format%20in%20Go&text=To%2))
 
 
 ### Value keeper 
-You can extract values from request and response with using value keeper.     
-For instance this script will retrieve user from request query parameter. For more you can check examples.     
-`${value::request::queryparams::userId}`
+lara allowed to you extracting values from request and response objects with using value keeper.
+For instance this script will retrieve userId value from request query parameter.    
+`${value::request::queryparams::userId}`         
+ You can extract values from     
+- Request body    
+- Request path variable    
+- Request query paramter      
+- Response body (you may need this for callbacks)     
+For more you can check examples.    
 
 
 ## Authorization Interceptor
-If you define callback method and this callback will send request to a server. A server is protected with an authorization method. You can define your authorization credential to config yaml file and use it as value of token-generator. Before sending request to callback server, lara will first fetch token and use this token while fetching callback service.       
+If you define callback method and this callback will send request to a server. For some cases, that server is protected with an authorization method. You can define your authorization credential to config yaml file and use it as value of token-generator into callback spesification. Before sending request to callback server, lara will first fetch token and use this token while fetching callback service.       
 First you need to define your authorization service credential as below.      
-As an example keycloak will our token server name. You can give any name that you want instead of keycloak.  
-Lara supports Password and Client Credentials grant types. Check example config yml for more.
-``` 
-type : Password-Credential -> Password Credentials Grant Type
-type :  Client-Credential  -> Client Credentials Grant Type
-
-
-``` 
+As an example the name of autorization server is keycloak. You can give any name that you want instead of keycloak.  
 
 config.yml
 ``` 
@@ -126,10 +125,17 @@ moc.json
             },
 ```
 
+Lara supports Password and Client Credentials grant types. Check example config yml for more.
+
+``` 
+type : Password-Credential -> Password Credentials Grant Type
+type :  Client-Credential  -> Client Credentials Grant Type
+
+``` 
 
 ## Watcher 
 If you want to update server when you update mock file, you can basically pass watcher flag to application.     
-There two way to initialize lara with watcher   
+There two ways to initialize lara with watcher   
 First pass wather flag to application   
 `--watcher`   
 Second add watcher field to config file   
