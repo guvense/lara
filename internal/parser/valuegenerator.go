@@ -22,6 +22,10 @@ var strFunctionMap = map[string]interface{}{
 	"regex": generateStringFromRegexAndLenght,
 }
 
+var dateFunctionMap = map[string]interface{}{
+	"now": generateDateNow,
+}
+
 var numberFunctionMap = map[string]interface{}{
 	"generate": numberGenerator,
 	
@@ -65,6 +69,17 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 				prepared = strings.Replace(prepared, value, generatedValue, -1)
 			}
 
+		} else if s[0] == "date" {
+			dateFormat := "01-02-2006"
+			formatIndex := len(s) - 1 
+			if cached.Config.Date != nil && cached.Config.Date[s[formatIndex]] != "" {
+				dateFormat = cached.Config.Date[s[formatIndex]]
+			}
+			s[formatIndex] = dateFormat
+			generatedValue := callDynamically(s[0], s[1], s[2:]...)
+			if generatedValue != "" {
+				prepared = strings.Replace(prepared, value, generatedValue, -1)
+			}
 		}
 	}
 	return prepared
@@ -82,6 +97,11 @@ func callDynamically(pack string, name string, args ...string) string {
 			return (strFunctionMap[name].(func(string, string) string)(args[0], args[1]))
 		}
 		return (strFunctionMap[name].(func() string)())
+	case "date":
+		if len(args) == 1 {
+			return (dateFunctionMap[name].(func(string) string)(args[0]))
+		}
+		return ""
 	case "number": 
 		if len(args) == 2 {
 			first, err := strconv.ParseInt(args[0], 0, 64)
@@ -99,6 +119,10 @@ func callDynamically(pack string, name string, args ...string) string {
 		}
 	}
 	return ""
+}
+
+func generateDateNow(format string) string {
+	return generator.GenerateCurrentDayByFormat(format)
 }
 
 func random(value string) string {
@@ -129,7 +153,6 @@ func numberGenerator(from int64, to int64) string {
 	value :=  generator.GenerateNumber(from, to)
 	return  strconv.FormatInt(int64(value), 10)
 }
-
 
 func prepareSearchString(searchTemrs []string) string {
 

@@ -13,7 +13,8 @@ type Config struct {
 	ServerConfig   ServerConfig         `yaml:"server"`
 	TokenGenerator TokenGenerator 		`yaml:"token-generator"`
 	Watcher bool                  		`yaml:"watcher"`
-	RegexExpression map[string]string           `yaml:"regex"`
+	RegexExpression map[string]string   `yaml:"regex"`
+	Date map[string]string              `yaml:"date"`
 }
 
 type ServerConfig struct {

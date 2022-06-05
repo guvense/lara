@@ -41,3 +41,9 @@ func GenerateStringFromRegex(regex string, length int) string {
 }
 
 
+func GenerateCurrentDayByFormat(format  string) string {
+	currentTime := time.Now()
+
+	return currentTime.Format(format)
+}
+
