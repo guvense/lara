@@ -63,7 +63,11 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 					continue
 				}
 				s[2] = expression
-			}
+
+				if len(s) == 3 {
+					s = append(s, "0")
+				}
+ 			}
 			generatedValue := callDynamically(s[0], s[1], s[2:]...)
 			if generatedValue != "" {
 				prepared = strings.Replace(prepared, value, generatedValue, -1)
@@ -139,13 +143,16 @@ func uuidGenerator() string {
 
 func generateStringFromRegexAndLenght(regex string, lenght string) string {
 
+	len := 0
+	if lenght != "" {
 	parsed, err := strconv.Atoi(lenght)
-
 	if err != nil {
 		return ""
 	}
+	len = parsed
+}
 
-	return generator.GenerateStringFromRegex(regex, parsed)
+	return generator.GenerateStringFromRegexAndLength(regex, len)
 }
 
 func numberGenerator(from int64, to int64) string {

@@ -32,14 +32,13 @@ func GenerateNumber(from, to int64) int64{
 	return rand.Int63n(rng) + from
 }
 
-func GenerateStringFromRegex(regex string, length int) string {
-	str, err := reggen.Generate(regex, 10)
+func GenerateStringFromRegexAndLength(regex string, length int) string {
+	str, err := reggen.Generate(regex, length)
 	if err != nil {
 		return ""
 	}
 	return str
 }
-
 
 func GenerateCurrentDayByFormat(format  string) string {
 	currentTime := time.Now()

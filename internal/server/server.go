@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -50,6 +51,9 @@ loop:
 	for {
 		select {
 		case filePath := <-filePathsCh:
+			if filepath.Ext(filePath) != ".json" {
+				continue
+			}
 			var mocs []model.Moc
 			err := UnmarshalMocs(filePath, &mocs)
 			if err != nil {

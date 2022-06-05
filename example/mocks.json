@@ -1,0 +1,86 @@
+[
+    { 
+        "rest" : {
+        "request": {
+            "endpoint" : "/test/{id:[\\w]+}",
+            "method": "POST",
+            "queryparams" : {"username" : "john", "firstName": "{_firstName:[\\w]+}"},
+            "body" : {"username": "{_username:[\\w]+}"},
+            "headers" :  {"content-type": "application/json"}
+            },
+        "response" : 
+            {
+                "after": "1005ms",
+                "status": 201,
+                "body":  { "name" : "john", 
+                    "pathId" : "${value::request::pathvariables::id}",  
+                    "username" : "${value::request::body::username}" , 
+                    "uuid" : "${str::uuid}", 
+                    "randomString" : "${str::random::10}",  
+                    "firstName" : "${value::request::queryparams::firstName}", 
+                    "point": "${number::generate::-10::1}",
+                    "email" : "${str::regex::email::10}",
+                    "createdDate":"${date::now::simpleDateFormat}",
+                    "updatedDate":"${date::now::monthDayYear}", 
+                    "tenDigitCode" : "${str::regex::tenDigit}"
+                }
+            },
+        "callback": [
+            {
+                "rest" : {
+                    "after": "3000ms",
+                    "token-generator": "password",
+                    "request": {
+                        "endpoint" : "https://localhost:8443/users/${value::response::body::uuid}/${value::request::username::test}",
+                        "method": "POST",
+                        "headers" :  {"content-type": "application/json"},
+                        "body" : {"username" : "${value::request::body::username}", "oneMoreGeneratedUuid" : "${str::uuid}"}
+                        }
+                }
+            },
+
+            {
+                "rest" : {
+                    "after": "17000ms",
+                    "request": {
+                        "endpoint" : "https://localhost:8443/mycallback/${value::response::body::uuid}",
+                        "method": "GET",
+                        "headers" :  {"content-type": "application/json"}
+                        }
+                }
+            }
+
+        ]
+           
+    }
+},
+{ 
+    "rest" : {
+    "request": {
+        "endpoint" : "/tets-get",
+        "method": "GET",
+        "headers" :  {"content-type": "application/json"}
+        },
+    "response" : 
+        {
+            "after": "10000ms",
+            "status": 200,
+            "body": " Hello:  User! "      
+        },
+    "callback": [
+        {
+            "rest" : {
+                "content": {
+                "url" : "test",
+                "method": "POST",
+                "body" :  
+                { "test": " Hello:  `${ramdomize::string::12}` " },
+                "headers" :  {"content-type": "application/json"} 
+                }
+            }
+        }
+    ]
+       
+}
+}
+]

@@ -9,7 +9,7 @@ import (
 )
 
 type Config struct {
-	MocksPath      string               `yaml:"mocks_path"`
+	MocksPath      string               `yaml:"mocks-path"`
 	ServerConfig   ServerConfig         `yaml:"server"`
 	TokenGenerator TokenGenerator 		`yaml:"token-generator"`
 	Watcher bool                  		`yaml:"watcher"`
