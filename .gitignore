@@ -1,4 +1,4 @@
 .vscode
 
 /mocs
-config.yml
+./config.yml

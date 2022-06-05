@@ -1,0 +1,32 @@
+server:
+ host: 0.0.0.0
+ port: 8899
+mocks-path: ./mocks
+
+
+token-generator:
+   password:
+     type: Password-Credential
+     token-url:  
+     client-id: 
+     client-secret: 
+     username: 
+     password: 
+     scope: read
+   client:
+     type: Client-Credential
+     token-url:  
+     client-id: 
+     client-secret: 
+     scope: admin
+
+
+
+regex:
+  email: "^[a-z]{5,10}@[a-z]{5,10}\\.(com|net|org)$"
+  tenDigit : "^\\d{10}$"
+
+
+date:
+  simpleDateFormat: "2006-01-02"
+  monthDayYear : "01-02-2006"
