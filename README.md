@@ -132,3 +132,12 @@ docker run -p 8898:8898 -v "$PWD/mocs:/mocks" guvense/lara  --mocks /mocks --hos
 sudo docker run -p 8899:8899 -v "$PWD/mocs:/mocks" -v "$PWD/config.yml:/config.yml"  guvense/lara  --config /config.yml
 ```
 
+### Next step
+
+1- Documentation 
+2- Test Application according to doc
+3- Bug Fixing
+4- Adding basic test cases
+5 -First Release!!!!!
+
+
