@@ -16,7 +16,7 @@
 Lara is a mock server. You only define your server rules as json files and let lara create a server for you. 
 
 # Features
-You can check [examples](mocs) for usage of features.
+You can check [examples](example) for usage of features.
 
 ## Handler
  ### Rest Handler
