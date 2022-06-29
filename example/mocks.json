@@ -74,7 +74,7 @@
                 "url" : "test",
                 "method": "POST",
                 "body" :  
-                { "test": " Hello:  `${ramdomize::string::12}` " },
+                { "test": " Hello:  ${str::random::10} " },
                 "headers" :  {"content-type": "application/json"} 
                 }
             }
