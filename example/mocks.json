@@ -25,7 +25,11 @@
                     "createdDate":"${date::now::simpleDateFormat}",
                     "randomDate":"${date::random::simpleDateFormat}",
                     "updatedDate":"${date::now::monthDayYear}", 
-                    "tenDigitCode" : "${str::regex::tenDigit}"
+                    "tenDigitCode" : "${str::regex::tenDigit}",
+                    "nested" : {
+                        "uid": "${str::uuid}",
+                        "email": "${str::regex::email::10}"
+                    }
                 }
             },
         "callback": [
@@ -34,7 +38,7 @@
                     "after": "3000ms",
                     "token-generator": "password",
                     "request": {
-                        "endpoint" : "https://localhost:8443/users/${value::response::body::uuid}/${value::request::username::test}",
+                        "endpoint" : "https://localhost:8443/users/${value::response::body::nested::email}/${value::request::username::test}",
                         "method": "POST",
                         "headers" :  {"content-type": "application/json"},
                         "body" : {"username" : "${value::request::body::username}", "oneMoreGeneratedUuid" : "${str::uuid}"}
