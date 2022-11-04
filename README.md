@@ -156,10 +156,6 @@ sudo docker run -p 8899:8899 -v "$PWD/mocs:/mocks" -v "$PWD/config.yml:/config.y
 ```
 
 
-## Contribution Guide
-You just create a pull request with description!  
-
-
 ## License
 MIT License, see [LICENSE](https://github.com/guvense/lara/blob/main/LICENSE)
 
