@@ -60,11 +60,12 @@ Generating a random number between -10 and 1
 
 
 ### Date Library
-- Current Date from format   
-You can generate current date from format    
+- Date from format   
+You can generate date from format    
 First you need to define your date format to config file as below.
 If you are not provided any format the default format will be;    
 `01-02-2006 -> MM-DD-YYYY`
+
 
 ``` 
 date:
@@ -73,6 +74,7 @@ date:
 ``` 
 Then you can generate current date with the script     
 `${date::now::simpleDateFormat}`    
+`${date::random::simpleDateFormat}`  
 The last parameter is the keyword that you added to config file. You can define multiple different date formats to config file with different keywords. You are not allowed to define the format in the mock specification. Check examples for more info.
 
 !!! You need to use go time format time layout. You can check for more info
