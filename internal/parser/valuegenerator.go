@@ -19,16 +19,16 @@ type Cached struct {
 var strFunctionMap = map[string]interface{}{
 	"random": random,
 	"uuid":   uuidGenerator,
-	"regex": generateStringFromRegexAndLenght,
+	"regex":  generateStringFromRegexAndLenght,
 }
 
 var dateFunctionMap = map[string]interface{}{
-	"now": generateDateNow,
+	"now":    generateDateNow,
+	"random": generateDateRandom,
 }
 
 var numberFunctionMap = map[string]interface{}{
 	"generate": numberGenerator,
-	
 }
 
 func PrepareString(fullText string, extracteds []string, cached *Parser) string {
@@ -44,7 +44,7 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 			test := string(data)
 			log.Print(test)
 			searchTerm := prepareSearchString(s[1:])
-    		extracted := gjson.GetBytes(data, searchTerm).String()
+			extracted := gjson.GetBytes(data, searchTerm).String()
 			if extracted != "" {
 				prepared = strings.Replace(prepared, value, extracted, -1)
 			}
@@ -57,7 +57,7 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 			}
 
 		} else if s[0] == "str" {
-			if s[1] == "regex" &&  cached.Config.RegexExpression != nil {
+			if s[1] == "regex" && cached.Config.RegexExpression != nil {
 				expression := cached.Config.RegexExpression[s[2]]
 				if expression == "" {
 					continue
@@ -67,7 +67,7 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 				if len(s) == 3 {
 					s = append(s, "0")
 				}
- 			}
+			}
 			generatedValue := callDynamically(s[0], s[1], s[2:]...)
 			if generatedValue != "" {
 				prepared = strings.Replace(prepared, value, generatedValue, -1)
@@ -75,7 +75,7 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 
 		} else if s[0] == "date" {
 			dateFormat := "01-02-2006"
-			formatIndex := len(s) - 1 
+			formatIndex := len(s) - 1
 			if cached.Config.Date != nil && cached.Config.Date[s[formatIndex]] != "" {
 				dateFormat = cached.Config.Date[s[formatIndex]]
 			}
@@ -89,14 +89,12 @@ func PrepareString(fullText string, extracteds []string, cached *Parser) string 
 	return prepared
 }
 
-
-
 func callDynamically(pack string, name string, args ...string) string {
 	switch pack {
 	case "str":
 		if len(args) == 1 {
 			return (strFunctionMap[name].(func(string) string)(args[0]))
-		}else if len(args) == 2 {
+		} else if len(args) == 2 {
 
 			return (strFunctionMap[name].(func(string, string) string)(args[0], args[1]))
 		}
@@ -106,7 +104,7 @@ func callDynamically(pack string, name string, args ...string) string {
 			return (dateFunctionMap[name].(func(string) string)(args[0]))
 		}
 		return ""
-	case "number": 
+	case "number":
 		if len(args) == 2 {
 			first, err := strconv.ParseInt(args[0], 0, 64)
 			if err != nil {
@@ -129,6 +127,10 @@ func generateDateNow(format string) string {
 	return generator.GenerateCurrentDayByFormat(format)
 }
 
+func generateDateRandom(format string) string {
+	return generator.GenerateRandomDateByFormat(format)
+}
+
 func random(value string) string {
 	intVar, err := strconv.Atoi(value)
 	if err != nil {
@@ -145,20 +147,20 @@ func generateStringFromRegexAndLenght(regex string, lenght string) string {
 
 	len := 0
 	if lenght != "" {
-	parsed, err := strconv.Atoi(lenght)
-	if err != nil {
-		return ""
+		parsed, err := strconv.Atoi(lenght)
+		if err != nil {
+			return ""
+		}
+		len = parsed
 	}
-	len = parsed
-}
 
 	return generator.GenerateStringFromRegexAndLength(regex, len)
 }
 
 func numberGenerator(from int64, to int64) string {
 
-	value :=  generator.GenerateNumber(from, to)
-	return  strconv.FormatInt(int64(value), 10)
+	value := generator.GenerateNumber(from, to)
+	return strconv.FormatInt(int64(value), 10)
 }
 
 func prepareSearchString(searchTemrs []string) string {

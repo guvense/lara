@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-
 	"github.com/lucasjones/reggen"
 )
 
@@ -25,8 +24,7 @@ func GenerateUuid() string {
 	return uuid.New().String()
 }
 
-func GenerateNumber(from, to int64) int64{
-
+func GenerateNumber(from, to int64) int64 {
 	rand.Seed(time.Now().UnixNano())
 	rng := to - from
 	return rand.Int63n(rng) + from
@@ -40,9 +38,13 @@ func GenerateStringFromRegexAndLength(regex string, length int) string {
 	return str
 }
 
-func GenerateCurrentDayByFormat(format  string) string {
+func GenerateCurrentDayByFormat(format string) string {
 	currentTime := time.Now()
-
 	return currentTime.Format(format)
 }
 
+func GenerateRandomDateByFormat(format string) string {
+	randomTime := rand.Int63n(time.Now().Unix()-94608000) + 94608000
+	randomNow := time.Unix(randomTime, 0)
+	return randomNow.Format(format)
+}

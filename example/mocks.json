@@ -12,7 +12,9 @@
             {
                 "after": "1005ms",
                 "status": 201,
-                "body":  { "name" : "john doe", 
+                "body":  { 
+                    "fullname": "${value::request::body::username} : ${value::request::queryparams::firstName}",
+                    "name" : "john doe", 
                     "pathId" : "${value::request::pathvariables::id}",  
                     "username" : "${value::request::body::username}" , 
                     "uuid" : "${str::uuid}", 
@@ -21,6 +23,7 @@
                     "point": "${number::generate::-10::1}",
                     "email" : "${str::regex::email::10}",
                     "createdDate":"${date::now::simpleDateFormat}",
+                    "randomDate":"${date::random::simpleDateFormat}",
                     "updatedDate":"${date::now::monthDayYear}", 
                     "tenDigitCode" : "${str::regex::tenDigit}"
                 }
