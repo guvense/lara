@@ -148,13 +148,9 @@ Second add watcher field to config file
 
 ### Docker
 - Passing arguments 
-``` 
-docker run -p 8898:8898 -v "$PWD/mocs:/mocks" guvense/lara  --mocks /mocks --host 0.0.0.0
-```
 
-- Using config file
 ```
-sudo docker run -p 8899:8899 -v "$PWD/mocs:/mocks" -v "$PWD/config.yml:/config.yml"  guvense/lara  --config /config.yml
+docker run -p 8899:8899 -v "$PWD/mocks.json:/mocks.json" -v "$PWD/config.yml:/config.yml"  guvense/lara  --config /config.yml --mocks /mocks.json
 ```
 
 
