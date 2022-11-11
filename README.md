@@ -33,17 +33,17 @@ You can also set delay time to simulate real-life scenarios. You only add after 
 
 
 ## Dynamic Value
-Thanks to the dynamic value feature, you can generate unique values for each request. Therefore you can get generic response or send a generic requests to callback services. There are different libraries for these fields. You only put these scripts to your mock specification.         
+Thanks to the dynamic value feature, you can generate unique values for each request. Therefore you can get generic response or send a generic requests to callback services. You only put these scripts to your mock specification.         
 
-### String Library
+### String Scripts
 - Random String    
 It will generate ten length random string. You can adjust the length of the string by changing the last parameter.     
 `${str::random::10} `
 - Uuid String    
-It will generate uuid   
+Generating uuid   
 `${str::uuid} `
 - Random String From Regex   
-You can also generate random strings by defining your own regex format. First, you need you to define your regular expression to config.yml file as below. You are not allowed to define this regular expression to mock specifications because of parsing rules.       
+You can also generate random strings by defining your own regex format. First, you need you to define your regular expression with using config.yml file as below. You are not allowed to define this regular expression to mock specifications because of parsing rules.       
 Otherwise, your specification will behave unexpectedly.
 ``` config.yml
 regex:
@@ -72,7 +72,7 @@ date:
   simpleDateFormat: "2006-01-02"
   myDateFormat : "2006-02-01"
 ``` 
-Then you can generate current date with the script     
+Then you can generate dates with the scripts      
 `${date::now::simpleDateFormat}`    
 `${date::random::simpleDateFormat}`  
 The last parameter is the keyword that you added to config file. You can define multiple different date formats to config file with different keywords. You are not allowed to define the format in the mock specification. Check examples for more info.
@@ -93,7 +93,7 @@ For instance, this script will retrieve userId value from the request query para
 For more you can check examples.    
 
 ## Authorization Interceptor
-If you define callback method and this callback will send request to a server. In some cases, that server is protected with an authorization method. You can define your authorization credential to config yaml file and use it as value of token-generator into callback specification. Before sending request to the callback server, Lara will first fetch token and use this token while fetching the callback service.            
+If you define callback method and this callback  will send request to a server. In some cases, that server is protected with an authorization method. You can define your authorization credential to config yaml file and use it as value of token-generator into callback specification. Before sending request to the callback server, Lara will first fetch token and use this token while sending request to target service.            
 First, you need to define your authorization service credential as below.        
 As an example the name of the authorization server is keycloak. You can give any name that you want instead of keycloak.      
 
@@ -141,10 +141,7 @@ There two way to initialize lara with watcher
 First pass wather flag to application   
 `--watcher`   
 Second add watcher field to config file   
-`watcher: true`     
-
-
-## Usage 
+`watcher: true`      
 
 ### Docker
 - Passing arguments 
