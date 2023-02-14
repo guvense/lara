@@ -36,6 +36,8 @@
             {
                 "rest" : {
                     "after": "3000ms",
+                    "repeat": 2, 
+                    "exponential": 1.6,
                     "token-generator": "password",
                     "request": {
                         "endpoint" : "https://localhost:8443/users/${value::response::body::nested::email}/${value::request::username::test}",
@@ -44,19 +46,7 @@
                         "body" : {"username" : "${value::request::body::username}", "oneMoreGeneratedUuid" : "${str::uuid}"}
                         }
                 }
-            },
-
-            {
-                "rest" : {
-                    "after": "17000ms",
-                    "request": {
-                        "endpoint" : "https://localhost:8443/mycallback/${value::response::body::uuid}",
-                        "method": "GET",
-                        "headers" :  {"content-type": "application/json"}
-                        }
-                }
             }
-
         ]
            
     }
