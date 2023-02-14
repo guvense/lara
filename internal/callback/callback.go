@@ -21,31 +21,52 @@ type CallBack struct {
 
 func (s *CallBack) Call(callbacks []model.Callback, parser *parser.Parser) {
 	for _, callback := range callbacks {
-		
 
 		if callback.CallbackRest.Request.Endpoint != "" {
 
 			var token string
-		
+
 			if callback.CallbackRest.AuthorizationKey != "" {
 				tokenServers := s.TokenServers
 				var err error
 				token, err = auth.RetrieveAuthBearerToken(tokenServers[callback.CallbackRest.AuthorizationKey])
-			
+
 				if err != nil {
 					log.Print("Error occurred preparing token please check token server credentials: %w", err)
 				}
 			}
-			sendRestCallback(callback.CallbackRest, token, parser)
+
+			if callback.CallbackRest.Repeat == 0 {
+				if callback.CallbackRest.Delay.Delay() > 0 {
+					time.Sleep(callback.CallbackRest.Delay.Delay())
+				}
+
+				sendRestCallback(callback.CallbackRest, token, parser)
+				continue
+			}
+
+			if callback.CallbackRest.Exponential == 0 {
+				callback.CallbackRest.Exponential = 1
+			}
+
+			var timeForWait time.Duration
+			for i := 0; i < callback.CallbackRest.Repeat; i++ {
+				if callback.CallbackRest.Delay.Delay() > 0 {
+					if i == 0 {
+						timeForWait = callback.CallbackRest.Delay.Delay()
+					} else {
+						timeForWait = callback.CallbackRest.Delay.Delay() * time.Duration(callback.CallbackRest.Exponential)
+					}
+				}
+
+				time.Sleep(timeForWait)
+				sendRestCallback(callback.CallbackRest, token, parser)
+			}
 		}
 	}
 }
 
 func sendRestCallback(restCallback model.CallbackRest, token string, parser *parser.Parser) {
-
-	if restCallback.Delay.Delay() > 0 {
-		time.Sleep(restCallback.Delay.Delay())
-	}
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -59,7 +80,6 @@ func sendRestCallback(restCallback model.CallbackRest, token string, parser *par
 		stringJson := fmt.Sprintf("%v", string(restCallback.Request.Body))
 		body := parser.Parse(stringJson)
 		jsonBody = []byte(body)
-		log.Printf("Callback body : %s", body)
 	}
 
 	endPoint := parser.Parse(restCallback.Request.Endpoint)
@@ -77,7 +97,7 @@ func sendRestCallback(restCallback model.CallbackRest, token string, parser *par
 	}
 
 	if token != "" {
-		req.Header.Add("Authorization", "Bearer "+ token)
+		req.Header.Add("Authorization", "Bearer "+token)
 	}
 
 	_, err = client.Do(req)

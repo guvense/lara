@@ -17,7 +17,7 @@ type Rest struct {
 
 type Request struct {
 	Method   string             `json:"method"`
-	Body     json.RawMessage              `json:"body"`
+	Body     json.RawMessage    `json:"body"`
 	Endpoint string             `json:"endpoint"`
 	Params   *map[string]string `json:"queryparams"`
 	Headers  *map[string]string `json:"headers"`
@@ -25,7 +25,7 @@ type Request struct {
 
 type Response struct {
 	Status  int                `json:"status"`
-	Body    json.RawMessage              `json:"body"`
+	Body    json.RawMessage    `json:"body"`
 	Headers *map[string]string `json:"headers"`
 	Delay   ProcessDelay       `json:"after"`
 }
@@ -38,6 +38,8 @@ type CallbackRest struct {
 	Request          Request      `json:"request"`
 	Delay            ProcessDelay `json:"after"`
 	AuthorizationKey string       `json:"token-generator"`
+	Repeat           int          `json:"repeat"`
+	Exponential      float64      `json:"exponential"`
 }
 
 type ProcessDelay struct {
@@ -47,7 +49,6 @@ type ProcessDelay struct {
 func (d *ProcessDelay) Delay() time.Duration {
 	return time.Duration(d.delay)
 }
-
 
 func (d *ProcessDelay) UnmarshalJSON(data []byte) error {
 	var input string
