@@ -11,6 +11,7 @@
     * [Authorization Interceptor](#authorization-interceptor)
     * [Watcher](#watcher)
  - [Usage](#usage)
+ - [Web UI](#web-ui)
 
 ## Overview
 Lara is a configurable mock server. You just define your specifications as JSON files and let Lara create a server for you.   
@@ -30,6 +31,55 @@ You can also set delay time to simulate real-life scenarios. You only add after 
 ## Callback
   ### Rest Callback
 - You can define one or multiple callback methods for each request. First, Lara will return response according to the spec then Lara invokes your callback action. As mentioned, you can define a delay time for callbacks as well.    
+
+  ### Message Broker Callback
+- You can define broker callbacks with `message-broker` for asynchronous publish actions after a response is returned.
+- `type` defines broker implementation. Current supported values are `kafka` and `rabbitmq`.
+- `after` defines delay before publish operation (example: `10000ms`).
+- You can still use dynamic placeholders in broker fields and message payloads.
+
+Example callback definition:
+```json
+{
+  "message-broker": {
+    "type": "kafka",
+    "after": "10000ms",
+    "connection": {
+      "brokers": ["localhost:9092"]
+    },
+    "headers": {
+      "x-source": "lara"
+    },
+    "message": {
+      "orderId": "${value::response::body::uuid}"
+    },
+    "kafka": {
+      "topic": "orders.created",
+      "key": "${value::request::body::username}"
+    }
+  }
+}
+```
+
+RabbitMQ example:
+```json
+{
+  "message-broker": {
+    "type": "rabbitmq",
+    "after": "5000ms",
+    "connection": {
+      "url": "amqp://guest:guest@localhost:5672/"
+    },
+    "message": {
+      "event": "user.updated"
+    },
+    "rabbitmq": {
+      "exchange": "events",
+      "routing-key": "user.updated"
+    }
+  }
+}
+```
 
 
 ## Dynamic Value
@@ -142,6 +192,53 @@ First pass wather flag to application
 `--watcher`   
 Second add watcher field to config file   
 `watcher: true`      
+
+## Web UI
+Lara now ships with a separate Next.js web app under `web/`.
+
+- Web app serves editor UI for `config.yml` and `mocks.json`
+- Wizard-style flow is supported from UI:
+  - `Create Mock Service`
+  - Select request type/method/endpoint
+  - Configure response details
+  - Optionally configure REST callback
+  - Optionally configure callback authentication
+  - Optionally configure message-broker callback (`kafka` / `rabbitmq`)
+  - Apply form output into `mocks.json`, then save
+- Backend exposes editor APIs:
+  - `GET /api/editor`
+  - `POST /api/editor/save`
+- Save action writes files and watcher rebuilds Lara server automatically
+
+### Run with Docker Compose
+
+Use one command to start both backend and web UI:
+
+```bash
+docker compose up --build
+```
+
+If backend image build fails due to `go mod tidy` compatibility resolution, this repository's Dockerfile already uses `go mod download` to avoid mutating module files during image build.
+
+Then open:
+
+- Web UI: `http://localhost:3000`
+- Lara backend: `http://localhost:8898`
+
+Compose setup details:
+
+- `backend` service runs Lara with:
+  - `--config /data/config.yml`
+  - `--mocks /data/mocks`
+  - `--watcher=true`
+- `web` service proxies editor requests to backend via `LARA_BACKEND_URL=http://backend:8898`
+- Shared runtime files are mounted from `./runtime` to backend `/data`
+
+Stop services:
+
+```bash
+docker compose down
+```
 
 ### Docker
 - Passing arguments 

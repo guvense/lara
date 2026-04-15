@@ -47,6 +47,46 @@
             },
 
             {
+                "message-broker": {
+                    "type": "kafka",
+                    "after": "10000ms",
+                    "connection": {
+                        "brokers": ["localhost:9092"]
+                    },
+                    "headers": {
+                        "x-lara-event": "user-created"
+                    },
+                    "message": {
+                        "event": "user-created",
+                        "id": "${value::response::body::uuid}",
+                        "username": "${value::request::body::username}"
+                    },
+                    "kafka": {
+                        "topic": "users.events",
+                        "key": "${value::request::body::username}"
+                    }
+                }
+            },
+
+            {
+                "message-broker": {
+                    "type": "rabbitmq",
+                    "after": "5000ms",
+                    "connection": {
+                        "url": "amqp://guest:guest@localhost:5672/"
+                    },
+                    "message": {
+                        "event": "audit",
+                        "pathId": "${value::request::pathvariables::id}"
+                    },
+                    "rabbitmq": {
+                        "exchange": "events",
+                        "routing-key": "audit.user"
+                    }
+                }
+            },
+
+            {
                 "rest" : {
                     "after": "17000ms",
                     "request": {

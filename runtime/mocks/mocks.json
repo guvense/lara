@@ -1,0 +1,40 @@
+[
+  {
+    "rest": {
+      "request": {
+        "endpoint": "/users",
+        "method": "POST",
+        "headers": {
+          "content-type": "application/json"
+        }
+      },
+      "response": {
+        "status": 200,
+        "after": "0ms",
+        "body": {
+          "ok": true
+        }
+      },
+      "callback": [
+        {
+          "message-broker": {
+            "type": "kafka",
+            "after": "10000ms",
+            "connection": {
+              "brokers": [
+                "localhost:9092"
+              ]
+            },
+            "message": {
+              "event": "created"
+            },
+            "kafka": {
+              "topic": "users.events",
+              "key": "${value::request::body::username}"
+            }
+          }
+        }
+      ]
+    }
+  }
+]

@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	lara "github.com/guvense/lara/internal"
+	editorapi "github.com/guvense/lara/internal/editorapi"
 	mocwatcher "github.com/guvense/lara/internal/mocwatcher"
 	server "github.com/guvense/lara/internal/server"
 
@@ -25,7 +27,8 @@ const (
 	_defaultHost       = "localhost"
 	_defaultPort       = 8898
 	_defaultMocksPath  = "/mocs"
-	_defaultWatcher  = false
+	_defaultWatcher    = false
+	_defaultConfigPath = "./config.yml"
 )
 
 func main() {
@@ -42,17 +45,25 @@ func main() {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 
+	watchConfigPath := effectiveConfigPath(*configFilePath)
+
 	config, err := lara.PrepareConfig(*host, *port, *watcher, *mocksPath, *configFilePath)
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	s := runServer(config)
+	if err := ensureMocksDirectory(config.MocksPath); err != nil {
+		log.Fatal(err)
+	}
+	if err := ensureConfigFile(watchConfigPath); err != nil {
+		log.Fatal(err)
+	}
+
+	s := runServer(config, watchConfigPath)
 	s.Run()
 
-	
-	w := runWatcher(&s, config, *configFilePath)
+	w := runWatcher(&s, config, watchConfigPath)
 	
 	<-done
 	close(done)
@@ -71,6 +82,14 @@ func runWatcher(currentSrv *server.Server, config lara.Config, configPath string
 	if !config.Watcher {
 		return nil
 	}
+
+	if err := ensureConfigFile(configPath); err != nil {
+		log.Fatal(err)
+	}
+	if err := ensureMocksDirectory(config.MocksPath); err != nil {
+		log.Fatal(err)
+	}
+
 	w, err := mocwatcher.InitializeWatcher(config.MocksPath,configPath)
 	if err != nil {
 		log.Fatal(err)
@@ -79,13 +98,13 @@ func runWatcher(currentSrv *server.Server, config lara.Config, configPath string
 		if err := currentSrv.Shutdown(); err != nil {
 			log.Fatal(err)
 		}
-		*currentSrv = runServer(config)
+		*currentSrv = runServer(config, configPath)
 		currentSrv.Run()
 	})
 	return w
 }
 
-func runServer(config lara.Config) server.Server {
+func runServer(config lara.Config, configPath string) server.Server {
 
 	router := mux.NewRouter()
 	httpAddr := fmt.Sprintf("%s:%d", config.ServerConfig.Host, config.ServerConfig.Port)
@@ -103,8 +122,38 @@ func runServer(config lara.Config) server.Server {
 		Config:     config,
 	}
 
+	editorapi.AttachRoutes(router, editorapi.Options{
+		ConfigPath: configPath,
+		MocksPath:  config.MocksPath,
+	})
+
 	if err := server.Build(); err != nil {
 		log.Fatal(err)
 	}
 	return server
+}
+
+func effectiveConfigPath(path string) string {
+	if path != "" {
+		return path
+	}
+	return _defaultConfigPath
+}
+
+func ensureConfigFile(path string) error {
+	if _, err := os.Stat(path); err == nil {
+		return nil
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
+
+	return os.WriteFile(path, []byte("\n"), 0o600)
+}
+
+func ensureMocksDirectory(path string) error {
+	return os.MkdirAll(path, 0o755)
 }

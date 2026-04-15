@@ -5,7 +5,7 @@ LABEL MAINTAINER = 'Guven Seckin'
 ARG VERSION=dev
 WORKDIR /go/src/github.com/guvense/lara
 COPY . .
-RUN go mod tidy \
+RUN go mod download \
     && LDFLAGS=$(echo "-s -w -X main.version="${VERSION}) \
     && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/lara -ldflags "$LDFLAGS" cmd/lara/main.go
 

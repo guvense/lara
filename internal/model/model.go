@@ -31,13 +31,43 @@ type Response struct {
 }
 
 type Callback struct {
-	CallbackRest CallbackRest `json:"rest"`
+	CallbackRest    *CallbackRest    `json:"rest,omitempty"`
+	MessageBroker   *MessageBroker   `json:"message-broker,omitempty"`
 }
 
 type CallbackRest struct {
 	Request          Request      `json:"request"`
 	Delay            ProcessDelay `json:"after"`
 	AuthorizationKey string       `json:"token-generator"`
+}
+
+type MessageBroker struct {
+	Type       string            `json:"type"`
+	Delay      ProcessDelay      `json:"after"`
+	Connection BrokerConnection  `json:"connection"`
+	Headers    *map[string]string `json:"headers"`
+	Message    json.RawMessage   `json:"message"`
+	Kafka      *KafkaPublisher   `json:"kafka,omitempty"`
+	RabbitMQ   *RabbitMQPublisher `json:"rabbitmq,omitempty"`
+}
+
+type BrokerConnection struct {
+	Brokers  []string `json:"brokers"`
+	URL      string   `json:"url"`
+	Username string   `json:"username"`
+	Password string   `json:"password"`
+	TLS      bool     `json:"tls"`
+}
+
+type KafkaPublisher struct {
+	Topic string `json:"topic"`
+	Key   string `json:"key"`
+}
+
+type RabbitMQPublisher struct {
+	Exchange   string `json:"exchange"`
+	RoutingKey string `json:"routing-key"`
+	Queue      string `json:"queue"`
 }
 
 type ProcessDelay struct {
